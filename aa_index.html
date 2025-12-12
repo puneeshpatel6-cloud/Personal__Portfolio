@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login System</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #141313; }
+        .container { background:grey; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 300px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+        button:hover { background: #0056b3; }
+        .link { margin-top: 15px; display: block; color: #007bff; cursor: pointer; text-decoration: underline; font-size: 0.9rem; }
+        .hidden { display: none; }
+    </style>
+    <link rel="stylesheet" href="et.css">
+</head>
+<body>
+
+    <div class="container">
+        
+        <div id="login-section">
+            <h2>Login</h2>
+            <input type="email" id="login-email" placeholder="Enter Email">
+            <input type="password" id="login-pass" placeholder="Enter Password">
+            <button onclick="loginUser()">Login</button>
+            <span class="link" onclick="switchView('signup')">Create an Account</span>
+        </div>
+
+        <div id="signup-section" class="hidden">
+            <h2>Sign Up</h2>
+            <input type="text" id="signup-name" placeholder="Full Name">
+            <input type="email" id="signup-email" placeholder="Enter Email">
+            <input type="password" id="signup-pass" placeholder="Create Password">
+            <button onclick="signupUser()">Sign Up</button>
+            <span class="link" onclick="switchView('login')">Back to Login</span>
+        </div>
+
+    </div>
+
+    <script>
+        // 1. SIGNUP LOGIC
+        function signupUser() {
+            const name = document.getElementById('signup-name').value;
+            const email = document.getElementById('signup-email').value.trim().toLowerCase();
+            const pass = document.getElementById('signup-pass').value;
+
+            if (!name || !email || !pass) {
+                alert("Please fill in all fields.");
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+
+            // Check if email exists
+            if (users.some(u => u.email === email)) {
+                alert("Email already exists! Please login.");
+                return;
+            }
+
+            // Save new user
+            users.push({ name, email, pass });
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            alert("Account created successfully! Please Login.");
+            switchView('login');
+        }
+
+        // 2. LOGIN LOGIC
+        function loginUser() {
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const pass = document.getElementById('login-pass').value;
+
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Find user
+            const user = users.find(u => u.email === email && u.pass === pass);
+
+            if (user) {
+                // SAVE SESSION AND REDIRECT
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                window.location.href = "home.html"; // <--- THIS REDIRECTS TO THE HOME PAGE
+            } else {
+                alert("Invalid email or password.");
+            }
+        }
+
+        // Helper to switch screens
+        function switchView(view) {
+            if(view === 'signup') {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('signup-section').classList.remove('hidden');
+            } else {
+                document.getElementById('signup-section').classList.add('hidden');
+                document.getElementById('login-section').classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
